@@ -1,27 +1,54 @@
 import subprocess
+import re
 
 #result = subprocess.run(['ls', '-l', '/home/wooc'], stdout=subprocess.PIPE).stdout.decode('utf-8')
 
 #result = subprocess.getoutput('ls -l /home/wooc')
 
 #virtualbox basic commands
-list_vms = 'vboxmanage list vms --sorted'
-list_running = 'vboxmanage list runningvms'
-list_vmdetails = 'vboxmanage guestproperty enumerate '
+list_vms_cmd = 'vboxmanage list vms --sorted'
+list_running_cmd = 'vboxmanage list runningvms'
+list_vmdetails_cmd = 'vboxmanage guestproperty enumerate '
 
+
+vm_list = []
 vm = 'Ubuntu_3'
 parameter = '-l'
 vmname = '/home/wooc'
-lsl = list_vmdetails + vm
+lsl = list_vmdetails_cmd + vm
+IP_addr = ""
+onoff = ""
+
+class vboxvm:
+    def __init__(self, name):
+        self.name = name
+        self.IP = IP_addr
+        self.status = onoff
+
+
+
+def vmlist():
+    vmlist_output = output_to_lines(list_vms_cmd)
+    for line_number in range(len(vmlist_output)):
+        line_content = vmlist_output[line_number]
+        capture_name = re.findall(r'"(.*?)"',line_content)
+        vm_list.append(capture_name[0])
+        return vm_list
 
 
 def get_ip(vm_name):
     command = list_vmdetails + vm_name
     details_list = output_to_lines(command)
-    print(details_list)
-    #return ip
+    for lnnr in range(len(details_list)):
+        line_content = details_list[lnnr]
+        if line_content.__contains__("V4/IP"):
+            IP_addr = line_content.split()[3][:-1]
+        else:
+            IP_addr = "Check g additions"
 
+    return IP_addr
 
+print(IP_addr)
 
 
 def output_to_lines(command):
@@ -39,18 +66,33 @@ def output_to_lines(command):
             line_content = ''
     return output_lines
 
-    #for line_nr in range (0,len(output_lines)):
-        #print(output_lines[line_nr])
+
+
+def list_all_vms():
+    vmlist()
+    print("List of all VMs:")
+    for vmnumber in range(len(vm_list)):
+        print(vmnumber, "\t", vm_list[vmnumber])
 
 
 
+def main_menu():
+    print("Pick and action:")
+    print("1.) List all VMs, their status and IPs")
+    print("2.) List Running VMs")
+    print("3.) Start specific VMs")
+    print("4.) Stop specific VMs - nicely")
+    print("5.) Stop specific VMs - hard")
+    print("6.) Show port forwarding config")
+    print("7.) Generate / update port forwarding config")
+    print("8.) Update ssh config file on the server for accessing VMs from outside the NAT network")
+    print("9.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network\n")
+
+    option = input("Pick and option: ")
+    if option == "1":
+        list_all_vms()
+    else:
+        quit()
 
 
-print(output_to_lines(lsl))
-print('\ttest\t')
-
-
-
-
-#print(result)
-#lista = subprocess.run(['ls', '/home/wooc'],)
+main_menu()

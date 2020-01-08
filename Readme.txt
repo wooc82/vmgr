@@ -13,4 +13,4 @@ Main MENU
 6.) Show port forwarding config
 7.) Generate / update port forwarding config
 8.) Update ssh config file on the server for accessing VMs from outside the NAT network
-9.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network (get ip)
+9.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network
