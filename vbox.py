@@ -28,12 +28,14 @@ class vboxvm:
 
 
 def vmlist():
+    global vm_list
+    vm_list = []
     vmlist_output = output_to_lines(list_vms_cmd)
     for line_number in range(len(vmlist_output)):
         line_content = vmlist_output[line_number]
         capture_name = re.findall(r'"(.*?)"',line_content)
         vm_list.append(capture_name[0])
-        return vm_list
+    return vm_list
 
 
 def get_ip(vm_name):
@@ -54,8 +56,6 @@ print(IP_addr)
 def output_to_lines(command):
 #result = subprocess.run([vm, parameter, vmname], stdout=subprocess.PIPE).stdout.decode('utf-8')
     result = subprocess.getoutput(command)
-
-
     output_lines = []
     line_content = ''
     for char in result:
@@ -67,17 +67,16 @@ def output_to_lines(command):
     return output_lines
 
 
-
 def list_all_vms():
     vmlist()
-    print("List of all VMs:")
+    #print("List of all VMs:")
     for vmnumber in range(len(vm_list)):
         print(vmnumber, "\t", vm_list[vmnumber])
 
 
 
 def main_menu():
-    print("Pick and action:")
+    print("\nPick and action:")
     print("1.) List all VMs, their status and IPs")
     print("2.) List Running VMs")
     print("3.) Start specific VMs")
@@ -87,10 +86,15 @@ def main_menu():
     print("7.) Generate / update port forwarding config")
     print("8.) Update ssh config file on the server for accessing VMs from outside the NAT network")
     print("9.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network\n")
+    print('Press "q" to quit')
 
     option = input("Pick and option: ")
     if option == "1":
         list_all_vms()
+        input("\nPress enter to go back to main menu...")
+        main_menu()
+    if option == "q":
+        quit()
     else:
         quit()
 
