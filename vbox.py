@@ -1,77 +1,78 @@
 import subprocess
 import re
 
-#result = subprocess.run(['ls', '-l', '/home/wooc'], stdout=subprocess.PIPE).stdout.decode('utf-8')
-
-#result = subprocess.getoutput('ls -l /home/wooc')
-
-#virtualbox basic commands
+# virtualbox basic commands
 list_vms_cmd = 'vboxmanage list vms --sorted'
 list_running_cmd = 'vboxmanage list runningvms --sorted'
 list_vmdetails_cmd = 'vboxmanage guestproperty enumerate '
 list_natnets_cmd = 'vboxmanage list natnets'
 natnet_rule_cmd = 'vboxmanage natnetwork modify --netname NatNetwork'
+start_vm_cmd = 'vboxmanage startvm '
+control_vm_cmd = 'vboxmanage controlvm '
+stop_vm_nicely_cmd = ' acpipowerbutton'
+stop_vm_hard_cmd = 'poweroff'
 
 
+# variables initialization
 output_lines = []
 vm_list = []
 power_off_list = []
 running_vm_list = []
 vm = 'Ubuntu_3'
 lsl = list_vmdetails_cmd + vm
-IP_addr = ""
+ip_addr = ""
 onoff = ""
 
 
-class vboxvm:
-    def __init__(self, name):
-        self.name = name
-        self.IP = IP_addr
-        self.status = onoff
+# class vboxvm:
+#    def __init__(self, name):
+#       self.name = name
+#        self.IP = IP_addr
+#        self.status = onoff
 
 
-#list all running VMs configured in Virtualbox
+# list all running VMs configured in Virtualbox
 def vmlist():
-    #using global variable and clearing the list
+    # using global variable and clearing the list
     global vm_list
     vm_list = []
-    #loading list_vms_cmd output to the list
+    # loading list_vms_cmd output to the list
     vmlist_output = output_to_lines(list_vms_cmd)
-    #extracting hostnames and adding them to the vm_list list
+    # extracting hostnames and adding them to the vm_list list
     for line_number in range(len(vmlist_output)):
         line_content = vmlist_output[line_number]
-        capture_name = re.findall(r'"(.*?)"',line_content)
+        capture_name = re.findall(r'"(.*?)"', line_content)
         vm_list.append(capture_name[0])
     return vm_list
 
 
-#list all VMs configured in Virtualbox
+# list all VMs configured in Virtualbox
 def runningvmlist():
-    #using global variable and clearing the list
+    # using global variable and clearing the list
     global running_vm_list
     running_vm_list = []
-    #loading list_vms_cmd output to the list
+    # loading list_vms_cmd output to the list
     running_vm_list_output = output_to_lines(list_running_cmd)
-    #extracting hostnames and adding them to the vm_list list
+    # extracting hostnames and adding them to the vm_list list
     for line_number in range(len(running_vm_list_output)):
         line_content = running_vm_list_output[line_number]
-        capture_name = re.findall(r'"(.*?)"',line_content)
+        capture_name = re.findall(r'"(.*?)"', line_content)
         running_vm_list.append(capture_name[0])
     return running_vm_list
+
 
 def offvmlist():
     global power_off_list
     global running_vm_list
     global vm_list
+    power_off_list = []
     vmlist()
     runningvmlist()
-    power_off_list = vm_list
-    for vm in power_off_list:
-        if vm in running_vm_list:
-           power_off_list.remove(vm)
+    for vm in vm_list:
+        if vm not in running_vm_list:
+            power_off_list.append(vm)
+
     return power_off_list
-
-
 
 
 def get_ip(vm_name):
@@ -80,15 +81,15 @@ def get_ip(vm_name):
     for lnnr in range(len(details_list)):
         line_content = details_list[lnnr]
         if line_content.__contains__("V4/IP"):
-            IP_addr = line_content.split()[3][:-1]
-            return IP_addr
+            ip_addr = line_content.split()[3][:-1]
+            return ip_addr
         else:
-            IP_addr = "Check g additions"
-    return IP_addr
+            ip_addr = "Check g additions"
+    return ip_addr
 
 
+# function that can run any command and put output in to list one line per list item
 
-#function that can run any command and put output in to list one line per list item
 def output_to_lines(command):
     global output_lines
     output_lines = []
@@ -107,24 +108,22 @@ def output_to_lines(command):
     return output_lines
 
 
-
-
 def list_all_vms():
     vmlist()
     for vmnumber in range(len(vm_list)):
         name = vm_list[vmnumber]
         runningvmlist()
         if name in running_vm_list:
-            IP = get_ip(name)
+            ip_addr = get_ip(name)
         else:
-            IP = "Powered Down"
-        if len(name)<5:
+            ip_addr = "Powered Down"
+        if len(name) < 5:
             tab = "\t\t\t"
-        elif 5<len(name)<10:
+        elif 5 < len(name) < 10:
             tab = "\t\t"
-        elif len(name)>=10:
+        elif len(name) >= 10:
             tab = "\t"
-        print(vmnumber, "\t", name, tab, IP)
+        print(vmnumber, "\t", name, tab, ip_addr)
 
 
 def list_running_vms():
@@ -132,32 +131,75 @@ def list_running_vms():
     for vmnumber in range(len(running_vm_list)):
         print(vmnumber, "\t", running_vm_list[vmnumber])
 
+
 def list_offline_vms():
     offvmlist()
     for vmnumber in range(len(power_off_list)):
         print(vmnumber, "\t", power_off_list[vmnumber])
 
+
 def start_vm():
     list_offline_vms()
-    vmnumber = int(input("\nPick VM to Start: "))
-    vmtostart = power_off_list[vmnumber]
-    command = "vboxmanage startvm " + vmtostart
-    output_to_lines(command)
-    for line in output_lines:
-        print(line)
+    vmnumber = input("\nPick VM to Start(q to cancell and go to Main Menu): ")
+    if vmnumber == 'q':
+        main_menu()
+    else:
+        vmnumber = int(vmnumber)
+        vmtostart = power_off_list[vmnumber]
+        command = start_vm_cmd + vmtostart
+        output_to_lines(command)
+        for line in output_lines:
+            print(line)
 
-def option_3():
+
+def stop_vm_nicely():
+    list_running_vms()
+    vmnumber = input("\nPick VM to Stop(q to cancell and go to Main Menu): ")
+    if vmnumber == 'q':
+        main_menu()
+    else:
+        vmnumber = int(vmnumber)
+        vmtostop = running_vm_list[vmnumber]
+        command = control_vm_cmd + vmtostop + stop_vm_nicely_cmd
+        output_to_lines(command)
+        for line in output_lines:
+            print(line)
+
+
+def mm_option_1():
+    list_all_vms()
+    input("\nPress enter to go back to main menu...")
+    main_menu()
+
+
+def mm_option_2():
+    list_running_vms()
+    input("\nPress enter to go back to main menu...")
+    main_menu()
+
+
+def mm_option_3():
     start_vm()
     print("\nWhat you want to do next:")
     print("1.) Start another VM")
-    print("2.) Go back to main menu")
+    print("q.) Go back to main menu")
     option = input("\nPick and option: ")
     if option == "1":
-        option_3()
-    if option == "2":
+        mm_option_3()
+    if option == "q":
         main_menu()
 
 
+def mm_option_4():
+    stop_vm_nicely()
+    print("\nWhat you want to do next:")
+    print("1.) Stop another VM")
+    print("q.) Go back to main menu")
+    option = input("\nPick and option: ")
+    if option == "1":
+        mm_option_4()
+    if option == "q":
+        main_menu()
 
 
 def main_menu():
@@ -175,18 +217,13 @@ def main_menu():
 
     option = input("Pick and option: ")
     if option == "1":
-        list_all_vms()
-        input("\nPress enter to go back to main menu...")
-        main_menu()
+        mm_option_1()
     if option == "2":
-        list_running_vms()
-        input("\nPress enter to go back to main menu...")
-        main_menu()
+        mm_option_2()
     if option == "3":
-        option_3()
-
-
-
+        mm_option_3()
+    if option == "4":
+        mm_option_4()
 
     if option == "q":
         quit()
