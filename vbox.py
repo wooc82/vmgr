@@ -134,7 +134,15 @@ def list_all_vms():
 def list_running_vms():
     runningvmlist()
     for vmnumber in range(len(running_vm_list)):
-        print(vmnumber, "\t", running_vm_list[vmnumber])
+        name = running_vm_list[vmnumber]
+        ip_addr = get_ip(name)
+        if len(name) < 5:
+            tab = "\t\t\t"
+        elif 5 < len(name) < 10:
+            tab = "\t\t"
+        elif len(name) >= 10:
+            tab = "\t"
+        print(vmnumber, "\t", name, tab, ip_addr)
 
 
 def list_offline_vms():
