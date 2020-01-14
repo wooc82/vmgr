@@ -8,6 +8,7 @@ list_vmdetails_cmd = 'vboxmanage guestproperty enumerate '
 list_natnets_cmd = 'vboxmanage list natnets'
 natnet_rule_cmd = 'vboxmanage natnetwork modify --netname NatNetwork'
 start_vm_cmd = 'vboxmanage startvm '
+headless = ' --type headless'
 control_vm_cmd = 'vboxmanage controlvm '
 stop_vm_nicely_cmd = ' acpipowerbutton'
 stop_vm_hard_cmd = 'poweroff'
@@ -103,8 +104,12 @@ def output_to_lines(command):
         if char != '\n' and possition != length:
             line_content = line_content + str(char)
         else:
-            output_lines.append(line_content)
-            line_content = ''
+            if possition != length:
+                output_lines.append(line_content)
+                line_content = ''
+            else:
+                line_content = line_content + str(result[-1])
+                output_lines.append(line_content)
     return output_lines
 
 
@@ -140,7 +145,7 @@ def list_offline_vms():
 
 def start_vm():
     list_offline_vms()
-    vmnumber = input("\nPick VM to Start(q to cancell and go to Main Menu): ")
+    vmnumber = input("\nPick VM to Start(q to cancel and go to Main Menu): ")
     if vmnumber == 'q':
         main_menu()
     else:
@@ -152,9 +157,23 @@ def start_vm():
             print(line)
 
 
+def start_vm_headless():
+    list_offline_vms()
+    vmnumber = input("\nPick VM to Start(q to cancel and go to Main Menu): ")
+    if vmnumber == 'q':
+        main_menu()
+    else:
+        vmnumber = int(vmnumber)
+        vmtostart = power_off_list[vmnumber]
+        command = start_vm_cmd + vmtostart + headless
+        output_to_lines(command)
+        for line in output_lines:
+            print(line)
+
+
 def stop_vm_nicely():
     list_running_vms()
-    vmnumber = input("\nPick VM to Stop(q to cancell and go to Main Menu): ")
+    vmnumber = input("\nPick VM to Stop(q to cancel and go to Main Menu): ")
     if vmnumber == 'q':
         main_menu()
     else:
@@ -191,13 +210,25 @@ def mm_option_3():
 
 
 def mm_option_4():
+    start_vm_headless()
+    print("\nWhat you want to do next:")
+    print("1.) Start another VM")
+    print("q.) Go back to main menu")
+    option = input("\nPick and option: ")
+    if option == "1":
+        mm_option_4()
+    if option == "q":
+        main_menu()
+
+
+def mm_option_5():
     stop_vm_nicely()
     print("\nWhat you want to do next:")
     print("1.) Stop another VM")
     print("q.) Go back to main menu")
     option = input("\nPick and option: ")
     if option == "1":
-        mm_option_4()
+        mm_option_5()
     if option == "q":
         main_menu()
 
@@ -207,12 +238,13 @@ def main_menu():
     print("1.) List all VMs, their status and IPs")
     print("2.) List Running VMs")
     print("3.) Start specific VMs")
-    print("4.) Stop specific VMs - nicely")
-    print("5.) Stop specific VMs - hard")
-    print("6.) Show port forwarding config")
-    print("7.) Generate / update port forwarding config")
-    print("8.) Update ssh config file on the server for accessing VMs from outside the NAT network")
-    print("9.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network\n")
+    print("4.) Start specific VMs - headless")
+    print("5.) Stop specific VMs - nicely")
+    print("6.) Stop specific VMs - hard")
+    print("7.) Show port forwarding config")
+    print("8.) Generate / update port forwarding config")
+    print("9.) Update ssh config file on the server for accessing VMs from outside the NAT network")
+    print("10.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network\n")
     print('Press "q" to quit')
 
     option = input("Pick and option: ")
@@ -224,6 +256,8 @@ def main_menu():
         mm_option_3()
     if option == "4":
         mm_option_4()
+    if option == "5":
+        mm_option_5()
 
     if option == "q":
         quit()
