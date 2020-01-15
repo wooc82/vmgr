@@ -6,13 +6,15 @@ list_vms_cmd = 'vboxmanage list vms --sorted'
 list_running_cmd = 'vboxmanage list runningvms --sorted'
 list_vmdetails_cmd = 'vboxmanage guestproperty enumerate '
 list_natnets_cmd = 'vboxmanage list natnets'
-natnet_rule_cmd = 'vboxmanage natnetwork modify --netname NatNetwork'
+natnet_rule_cmd = 'vboxmanage natnetwork modify --netname '
 start_vm_cmd = 'vboxmanage startvm '
 headless = ' --type headless'
 control_vm_cmd = 'vboxmanage controlvm '
 stop_vm_nicely_cmd = ' acpipowerbutton'
 stop_vm_hard_cmd = ' poweroff'
-
+showvminfo_cmd = 'vboxmanage showvminfo '
+grep_NIC_1_cmd = ' |grep "NIC 1"'
+grep_OS_type_cmd = ' |grep "Guest OS"'
 
 # variables initialization
 output_lines = []
@@ -204,6 +206,7 @@ def stop_vm_hard():
         for line in output_lines:
             print(line)
 
+
 def get_port_fwd_info():
     lines = output_to_lines(list_natnets_cmd)
     rules = []
@@ -213,7 +216,7 @@ def get_port_fwd_info():
             nat_networks.append(content[16:])
         elif content.startswith('Port-forwarding'):
             line = line + 1
-            for line in range(line,len(lines)):
+            for line in range(line, len(lines)):
                 content = lines[line]
                 if content.startswith('loopback'):
                     nat_forwarding_rules_all.append(rules)
@@ -232,6 +235,50 @@ def list_port_fwd():
         rules = nat_forwarding_rules_all[nat_networks.index(net)]
         for rule in rules:
             print(rule)
+
+
+def get_vm_nat_network(vmname):
+    command = showvminfo_cmd + vmname + grep_NIC_1_cmd
+    line = output_to_lines(command)
+    content = line[0]
+    words = content.split('\'')
+    vm_nat_network = words[1]
+    return vm_nat_network
+
+
+def check_if_windows(vmname):
+    command = showvminfo_cmd + vmname + grep_OS_type_cmd
+    line = output_to_lines(command)
+    content = line[0]
+    if content.__contains__("Windows"):
+        return True
+    else:
+        return False
+
+
+def create_nat_rule(vmname):
+    command = ''
+    ip = get_ip(vmname)
+    ip_last = ip.split(".")[3]
+    nat_name = get_vm_nat_network(vmname)
+    if check_if_windows(vmname):
+        dest_port = '3389'
+        if int(ip_last)<10:
+            port_nr = int(ip_last) + 400
+            rem_port = str(port_nr) + '89'
+        else:
+            rem_port = ip_last + '89'
+    else:
+        dest_port = '22'
+        if int(ip_last)<10:
+            port_nr = int(ip_last) + 400
+            rem_port = str(port_nr) + '22'
+        else:
+            rem_port = ip_last + '22'
+
+    name = vmname + '_vmgr'
+    command = natnet_rule_cmd + nat_name + ' --port-forward-4 "' + name + ':tcp:[]:' + rem_port + ':[' + ip + ']:' + dest_port + '"'
+    output_to_lines(command)
 
 
 def mm_option_1():

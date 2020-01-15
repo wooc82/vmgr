@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="10b695f6-cb82-4c9f-aeaf-582aed767ea4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/Scratchpad" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/vbox.py" afterDir="false" />
     </list>
@@ -173,6 +174,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="added ip info in the running vm list" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="992" y="622" width="607" height="397" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1579105332746">
+      <screen x="70" y="27" width="2490" height="1413" />
+    </state>
+    <state x="992" y="622" width="607" height="397" key="#com.intellij.fileTypes.FileTypeChooser/70.27.2490.1413@70.27.2490.1413" timestamp="1579105332746" />
     <state x="784" y="269" width="624" height="551" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1579053002785">
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
@@ -190,26 +195,42 @@
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
     <state x="1073" y="752" key="Github.ShareDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1578454294556" />
-    <state width="1377" height="258" key="GridCell.Tab.0.bottom" timestamp="1579059152086">
-      <screen x="70" y="27" width="1850" height="1053" />
+    <state width="1645" height="512" key="GridCell.Tab.0.bottom" timestamp="1579114679067">
+      <screen x="70" y="27" width="2490" height="1413" />
     </state>
     <state width="1377" height="258" key="GridCell.Tab.0.bottom/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
-    <state width="1645" height="512" key="GridCell.Tab.0.bottom/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166610" />
-    <state width="1377" height="258" key="GridCell.Tab.0.center" timestamp="1579059152086">
-      <screen x="70" y="27" width="1850" height="1053" />
+    <state width="1645" height="512" key="GridCell.Tab.0.bottom/70.27.2490.1413@70.27.2490.1413" timestamp="1579114679067" />
+    <state width="1645" height="512" key="GridCell.Tab.0.center" timestamp="1579114679066">
+      <screen x="70" y="27" width="2490" height="1413" />
     </state>
     <state width="1377" height="258" key="GridCell.Tab.0.center/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
-    <state width="1645" height="512" key="GridCell.Tab.0.center/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166602" />
-    <state width="1377" height="258" key="GridCell.Tab.0.left" timestamp="1579059152086">
-      <screen x="70" y="27" width="1850" height="1053" />
+    <state width="1645" height="512" key="GridCell.Tab.0.center/70.27.2490.1413@70.27.2490.1413" timestamp="1579114679066" />
+    <state width="1645" height="512" key="GridCell.Tab.0.left" timestamp="1579114679066">
+      <screen x="70" y="27" width="2490" height="1413" />
     </state>
     <state width="1377" height="258" key="GridCell.Tab.0.left/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
-    <state width="1645" height="512" key="GridCell.Tab.0.left/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166596" />
-    <state width="1377" height="258" key="GridCell.Tab.0.right" timestamp="1579059152086">
-      <screen x="70" y="27" width="1850" height="1053" />
+    <state width="1645" height="512" key="GridCell.Tab.0.left/70.27.2490.1413@70.27.2490.1413" timestamp="1579114679066" />
+    <state width="1645" height="512" key="GridCell.Tab.0.right" timestamp="1579114679067">
+      <screen x="70" y="27" width="2490" height="1413" />
     </state>
     <state width="1377" height="258" key="GridCell.Tab.0.right/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
-    <state width="1645" height="512" key="GridCell.Tab.0.right/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166609" />
+    <state width="1645" height="512" key="GridCell.Tab.0.right/70.27.2490.1413@70.27.2490.1413" timestamp="1579114679067" />
+    <state width="1645" height="413" key="GridCell.Tab.1.bottom" timestamp="1579106437296">
+      <screen x="70" y="27" width="2490" height="1413" />
+    </state>
+    <state width="1645" height="413" key="GridCell.Tab.1.bottom/70.27.2490.1413@70.27.2490.1413" timestamp="1579106437296" />
+    <state width="1645" height="413" key="GridCell.Tab.1.center" timestamp="1579106437295">
+      <screen x="70" y="27" width="2490" height="1413" />
+    </state>
+    <state width="1645" height="413" key="GridCell.Tab.1.center/70.27.2490.1413@70.27.2490.1413" timestamp="1579106437295" />
+    <state width="1645" height="413" key="GridCell.Tab.1.left" timestamp="1579106437295">
+      <screen x="70" y="27" width="2490" height="1413" />
+    </state>
+    <state width="1645" height="413" key="GridCell.Tab.1.left/70.27.2490.1413@70.27.2490.1413" timestamp="1579106437295" />
+    <state width="1645" height="413" key="GridCell.Tab.1.right" timestamp="1579106437296">
+      <screen x="70" y="27" width="2490" height="1413" />
+    </state>
+    <state width="1645" height="413" key="GridCell.Tab.1.right/70.27.2490.1413@70.27.2490.1413" timestamp="1579106437296" />
     <state x="794" y="450" width="571" height="581" key="RollbackChangesDialog" timestamp="1579027838039">
       <screen x="70" y="27" width="2490" height="1413" />
     </state>
@@ -236,5 +257,9 @@
       <screen x="70" y="27" width="2490" height="1413" />
     </state>
     <state x="1302" y="672" width="644" height="420" key="git4idea.merge.GitMergeDialog/70.27.2490.1413@70.27.2490.1413" timestamp="1578507584893" />
+    <state x="1187" y="507" width="672" height="678" key="search.everywhere.popup" timestamp="1579107835788">
+      <screen x="70" y="27" width="2490" height="1413" />
+    </state>
+    <state x="1187" y="507" width="672" height="678" key="search.everywhere.popup/70.27.2490.1413@70.27.2490.1413" timestamp="1579107835788" />
   </component>
 </project>
