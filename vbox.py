@@ -11,7 +11,7 @@ start_vm_cmd = 'vboxmanage startvm '
 headless = ' --type headless'
 control_vm_cmd = 'vboxmanage controlvm '
 stop_vm_nicely_cmd = ' acpipowerbutton'
-stop_vm_hard_cmd = 'poweroff'
+stop_vm_hard_cmd = ' poweroff'
 
 
 # variables initialization
@@ -19,10 +19,8 @@ output_lines = []
 vm_list = []
 power_off_list = []
 running_vm_list = []
-vm = 'Ubuntu_3'
-lsl = list_vmdetails_cmd + vm
-ip_addr = ""
-onoff = ""
+#ip_addr = ""
+#onoff = ""
 
 
 # class vboxvm:
@@ -193,6 +191,26 @@ def stop_vm_nicely():
             print(line)
 
 
+def stop_vm_hard():
+    list_running_vms()
+    vmnumber = input("\nPick VM to Stop(q to cancel and go to Main Menu): ")
+    if vmnumber == 'q':
+        main_menu()
+    else:
+        vmnumber = int(vmnumber)
+        vmtostop = running_vm_list[vmnumber]
+        command = control_vm_cmd + vmtostop + stop_vm_hard_cmd
+        output_to_lines(command)
+        for line in output_lines:
+            print(line)
+
+def get_port_fwd_info():
+    output_to_lines(list_natnets_cmd)
+
+
+
+    return nat_networks, nat_rules_all
+
 def mm_option_1():
     list_all_vms()
     input("\nPress enter to go back to main menu...")
@@ -241,6 +259,18 @@ def mm_option_5():
         main_menu()
 
 
+def mm_option_6():
+    stop_vm_hard()
+    print("\nWhat you want to do next:")
+    print("1.) Stop another VM")
+    print("q.) Go back to main menu")
+    option = input("\nPick and option: ")
+    if option == "1":
+        mm_option_6()
+    if option == "q":
+        main_menu()
+
+
 def main_menu():
     print("\nPick and action:")
     print("1.) List all VMs, their status and IPs")
@@ -266,6 +296,9 @@ def main_menu():
         mm_option_4()
     if option == "5":
         mm_option_5()
+    if option == "6":
+        mm_option_6()
+
 
     if option == "q":
         quit()
