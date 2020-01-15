@@ -23,7 +23,7 @@ power_off_list = []
 running_vm_list = []
 nat_forwarding_rules_all = []
 nat_networks = []
-#rules_in_nat_network = []
+
 
 # class vboxvm:
 #    def __init__(self, name):
@@ -210,10 +210,13 @@ def stop_vm_hard():
 def get_port_fwd_info():
     lines = output_to_lines(list_natnets_cmd)
     global nat_networks
+    global nat_forwarding_rules_all
+    nat_networks.clear()
+    nat_forwarding_rules_all.clear()
     rules_in_nat_network = []
     for line in range(len(lines)):
         content = lines[line]
-        if content.startswith('NetworkName') and not nat_networks.__contains__(content[16:]):
+        if content.startswith('NetworkName'): #and not nat_networks.__contains__(content[16:]):
             nat_networks.append(content[16:])
         elif content.startswith('Port-forwarding'):
             line = line + 1
