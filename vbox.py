@@ -216,7 +216,7 @@ def get_port_fwd_info():
     rules_in_nat_network = []
     for line in range(len(lines)):
         content = lines[line]
-        if content.startswith('NetworkName'): #and not nat_networks.__contains__(content[16:]):
+        if content.startswith('NetworkName'):
             nat_networks.append(content[16:])
         elif content.startswith('Port-forwarding'):
             line = line + 1
@@ -268,23 +268,23 @@ def check_if_windows(vmname):
 def create_nat_rule(vmname):
     ip = get_ip(vmname)
     if ip == "Check g additions":
-        print("Skipping ",vmname, " - Don't see IP - check guest additions")
+        print("Skipping ", vmname, " - Don't see IP - check guest additions")
     else:
         ip_last = ip.split(".")[3]
         nat_name = get_vm_nat_network(vmname)
         if nat_name == "Check guest network settings":
-            print("Skipping ",vmname, nat_name)
+            print("Skipping ", vmname, nat_name)
         else:
             if check_if_windows(vmname):
                 dest_port = '3389'
-                if int(ip_last)<10:
+                if int(ip_last) < 10:
                     port_nr = int(ip_last) + 400
                     rem_port = str(port_nr) + '89'
                 else:
                     rem_port = ip_last + '89'
             else:
                 dest_port = '22'
-                if int(ip_last)<10:
+                if int(ip_last) < 10:
                     port_nr = int(ip_last) + 400
                     rem_port = str(port_nr) + '22'
                 else:
@@ -311,7 +311,6 @@ def nat_network_rule_cleanup():
             if rule_name.__contains__('_vmgr'):
                 command = natnet_rule_cmd + net + ' --port-forward-4 delete ' + rule_name
                 output_to_lines(command)
-
 
 
 def mm_option_1():
@@ -379,13 +378,13 @@ def mm_option_7():
     input("\nPress enter to go back to main menu...")
     main_menu()
 
+
 def mm_option_8():
     nat_network_rule_cleanup()
     generate_nat_rules()
 
     input("\nPress enter to go back to main menu...")
     main_menu()
-
 
 
 
@@ -420,7 +419,6 @@ def main_menu():
         mm_option_7()
     if option == "8":
         mm_option_8()
-
 
     if option == "q":
         quit()
