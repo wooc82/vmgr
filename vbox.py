@@ -21,9 +21,9 @@ output_lines = []
 vm_list = []
 power_off_list = []
 running_vm_list = []
-nat_networks = []
 nat_forwarding_rules_all = []
-
+nat_networks = []
+#rules_in_nat_network = []
 
 # class vboxvm:
 #    def __init__(self, name):
@@ -209,30 +209,32 @@ def stop_vm_hard():
 
 def get_port_fwd_info():
     lines = output_to_lines(list_natnets_cmd)
-    rules = []
+    global nat_networks
+    rules_in_nat_network = []
     for line in range(len(lines)):
         content = lines[line]
-        if content.startswith('NetworkName'):
+        if content.startswith('NetworkName') and not nat_networks.__contains__(content[16:]):
             nat_networks.append(content[16:])
         elif content.startswith('Port-forwarding'):
             line = line + 1
             for line in range(line, len(lines)):
                 content = lines[line]
                 if content.startswith('loopback'):
-                    nat_forwarding_rules_all.append(rules)
-                    rules = []
+                    nat_forwarding_rules_all.append(rules_in_nat_network)
+                    rules_in_nat_network = []
                     break
                 else:
-                    rules.append(content[8:])
+                    rules_in_nat_network.append(content[8:])
     return nat_networks, nat_forwarding_rules_all
 
 
 def list_port_fwd():
     get_port_fwd_info()
-    for net in nat_networks:
-        print("\nNetwork: ", net)
+    for net in range(len(nat_networks)):
+        net_name = nat_networks[net]
+        print("\nNetwork: ", net_name)
         print('Rules:')
-        rules = nat_forwarding_rules_all[nat_networks.index(net)]
+        rules = nat_forwarding_rules_all[net]
         for rule in rules:
             print(rule)
 
@@ -241,9 +243,13 @@ def get_vm_nat_network(vmname):
     command = showvminfo_cmd + vmname + grep_NIC_1_cmd
     line = output_to_lines(command)
     content = line[0]
-    words = content.split('\'')
-    vm_nat_network = words[1]
-    return vm_nat_network
+    if content.__contains__("NAT Network"):
+        words = content.split('\'')
+        vm_nat_network = words[1]
+        return vm_nat_network
+    else:
+        vm_nat_network = "Check guest network settings"
+        return vm_nat_network
 
 
 def check_if_windows(vmname):
@@ -257,28 +263,52 @@ def check_if_windows(vmname):
 
 
 def create_nat_rule(vmname):
-    command = ''
     ip = get_ip(vmname)
-    ip_last = ip.split(".")[3]
-    nat_name = get_vm_nat_network(vmname)
-    if check_if_windows(vmname):
-        dest_port = '3389'
-        if int(ip_last)<10:
-            port_nr = int(ip_last) + 400
-            rem_port = str(port_nr) + '89'
-        else:
-            rem_port = ip_last + '89'
+    if ip == "Check g additions":
+        print("Skipping ",vmname, " - Don't see IP - check guest additions")
     else:
-        dest_port = '22'
-        if int(ip_last)<10:
-            port_nr = int(ip_last) + 400
-            rem_port = str(port_nr) + '22'
+        ip_last = ip.split(".")[3]
+        nat_name = get_vm_nat_network(vmname)
+        if nat_name == "Check guest network settings":
+            print("Skipping ",vmname, nat_name)
         else:
-            rem_port = ip_last + '22'
+            if check_if_windows(vmname):
+                dest_port = '3389'
+                if int(ip_last)<10:
+                    port_nr = int(ip_last) + 400
+                    rem_port = str(port_nr) + '89'
+                else:
+                    rem_port = ip_last + '89'
+            else:
+                dest_port = '22'
+                if int(ip_last)<10:
+                    port_nr = int(ip_last) + 400
+                    rem_port = str(port_nr) + '22'
+                else:
+                    rem_port = ip_last + '22'
+            name = vmname + '_vmgr'
+            command = natnet_rule_cmd + nat_name + ' --port-forward-4 "' + name + ':tcp:[]:' + rem_port + ':[' + ip + ']:' + dest_port + '"'
+            output_to_lines(command)
+            print('Created a rule for ', vmname)
 
-    name = vmname + '_vmgr'
-    command = natnet_rule_cmd + nat_name + ' --port-forward-4 "' + name + ':tcp:[]:' + rem_port + ':[' + ip + ']:' + dest_port + '"'
-    output_to_lines(command)
+
+def generate_nat_rules():
+    runningvmlist()
+    for vmname in runningvmlist():
+        create_nat_rule(vmname)
+
+
+def nat_network_rule_cleanup():
+    get_port_fwd_info()
+    for net in nat_networks:
+        rules = nat_forwarding_rules_all[nat_networks.index(net)]
+        for rule in rules:
+            words = rule.split(':')
+            rule_name = str(words[0])
+            if rule_name.__contains__('_vmgr'):
+                command = natnet_rule_cmd + net + ' --port-forward-4 delete ' + rule_name
+                output_to_lines(command)
+
 
 
 def mm_option_1():
@@ -346,6 +376,15 @@ def mm_option_7():
     input("\nPress enter to go back to main menu...")
     main_menu()
 
+def mm_option_8():
+    nat_network_rule_cleanup()
+    generate_nat_rules()
+
+    input("\nPress enter to go back to main menu...")
+    main_menu()
+
+
+
 
 def main_menu():
     print("\nPick and action:")
@@ -376,6 +415,9 @@ def main_menu():
         mm_option_6()
     if option == "7":
         mm_option_7()
+    if option == "8":
+        mm_option_8()
+
 
     if option == "q":
         quit()
