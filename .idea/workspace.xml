@@ -173,6 +173,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="added ip info in the running vm list" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="784" y="269" width="624" height="551" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1579053002785">
+      <screen x="70" y="27" width="1850" height="1053" />
+    </state>
+    <state x="784" y="269" width="624" height="551" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1579053002785" />
     <state x="984" y="287" width="1219" height="949" key="CommitChangelistDialog2" timestamp="1579036573128">
       <screen x="70" y="27" width="2490" height="1413" />
     </state>
@@ -186,25 +190,25 @@
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
     <state x="1073" y="752" key="Github.ShareDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1578454294556" />
-    <state width="1645" height="512" key="GridCell.Tab.0.bottom" timestamp="1579040166610">
-      <screen x="70" y="27" width="2490" height="1413" />
+    <state width="1377" height="258" key="GridCell.Tab.0.bottom" timestamp="1579059152086">
+      <screen x="70" y="27" width="1850" height="1053" />
     </state>
-    <state width="1377" height="258" key="GridCell.Tab.0.bottom/70.27.1850.1053@70.27.1850.1053" timestamp="1576683636106" />
+    <state width="1377" height="258" key="GridCell.Tab.0.bottom/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
     <state width="1645" height="512" key="GridCell.Tab.0.bottom/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166610" />
-    <state width="1645" height="512" key="GridCell.Tab.0.center" timestamp="1579040166602">
-      <screen x="70" y="27" width="2490" height="1413" />
+    <state width="1377" height="258" key="GridCell.Tab.0.center" timestamp="1579059152086">
+      <screen x="70" y="27" width="1850" height="1053" />
     </state>
-    <state width="1377" height="258" key="GridCell.Tab.0.center/70.27.1850.1053@70.27.1850.1053" timestamp="1576683636106" />
+    <state width="1377" height="258" key="GridCell.Tab.0.center/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
     <state width="1645" height="512" key="GridCell.Tab.0.center/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166602" />
-    <state width="1645" height="512" key="GridCell.Tab.0.left" timestamp="1579040166596">
-      <screen x="70" y="27" width="2490" height="1413" />
+    <state width="1377" height="258" key="GridCell.Tab.0.left" timestamp="1579059152086">
+      <screen x="70" y="27" width="1850" height="1053" />
     </state>
-    <state width="1377" height="258" key="GridCell.Tab.0.left/70.27.1850.1053@70.27.1850.1053" timestamp="1576683636106" />
+    <state width="1377" height="258" key="GridCell.Tab.0.left/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
     <state width="1645" height="512" key="GridCell.Tab.0.left/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166596" />
-    <state width="1645" height="512" key="GridCell.Tab.0.right" timestamp="1579040166609">
-      <screen x="70" y="27" width="2490" height="1413" />
+    <state width="1377" height="258" key="GridCell.Tab.0.right" timestamp="1579059152086">
+      <screen x="70" y="27" width="1850" height="1053" />
     </state>
-    <state width="1377" height="258" key="GridCell.Tab.0.right/70.27.1850.1053@70.27.1850.1053" timestamp="1576683636106" />
+    <state width="1377" height="258" key="GridCell.Tab.0.right/70.27.1850.1053@70.27.1850.1053" timestamp="1579059152086" />
     <state width="1645" height="512" key="GridCell.Tab.0.right/70.27.2490.1413@70.27.2490.1413" timestamp="1579040166609" />
     <state x="794" y="450" width="571" height="581" key="RollbackChangesDialog" timestamp="1579027838039">
       <screen x="70" y="27" width="2490" height="1413" />
@@ -219,10 +223,10 @@
     </state>
     <state x="680" y="437" width="800" height="535" key="Vcs.Push.Dialog.v2/70.27.1850.1053@70.27.1850.1053" timestamp="1578454474714" />
     <state x="891" y="577" width="800" height="535" key="Vcs.Push.Dialog.v2/70.27.2490.1413@70.27.2490.1413" timestamp="1579036583518" />
-    <state x="852" y="501" key="com.intellij.ide.util.TipDialog" timestamp="1579024478285">
-      <screen x="70" y="27" width="2490" height="1413" />
+    <state x="651" y="380" key="com.intellij.ide.util.TipDialog" timestamp="1579053084296">
+      <screen x="70" y="27" width="1850" height="1053" />
     </state>
-    <state x="651" y="380" key="com.intellij.ide.util.TipDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1578452567439" />
+    <state x="651" y="380" key="com.intellij.ide.util.TipDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1579053084296" />
     <state x="852" y="501" key="com.intellij.ide.util.TipDialog/70.27.2490.1413@70.27.2490.1413" timestamp="1579024478285" />
     <state x="971" y="674" width="464" height="167" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1578507364660">
       <screen x="70" y="27" width="2490" height="1413" />

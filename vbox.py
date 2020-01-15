@@ -19,8 +19,8 @@ output_lines = []
 vm_list = []
 power_off_list = []
 running_vm_list = []
-#ip_addr = ""
-#onoff = ""
+nat_networks = []
+nat_forwarding_rules_all = []
 
 
 # class vboxvm:
@@ -205,11 +205,34 @@ def stop_vm_hard():
             print(line)
 
 def get_port_fwd_info():
-    output_to_lines(list_natnets_cmd)
+    lines = output_to_lines(list_natnets_cmd)
+    rules = []
+    for line in range(len(lines)):
+        content = lines[line]
+        if content.startswith('NetworkName'):
+            nat_networks.append(content[16:])
+        elif content.startswith('Port-forwarding'):
+            line = line + 1
+            for line in range(line,len(lines)):
+                content = lines[line]
+                if content.startswith('loopback'):
+                    nat_forwarding_rules_all.append(rules)
+                    rules = []
+                    break
+                else:
+                    rules.append(content[8:])
+    return nat_networks, nat_forwarding_rules_all
 
 
+def list_port_fwd():
+    get_port_fwd_info()
+    for net in nat_networks:
+        print("\nNetwork: ", net)
+        print('Rules:')
+        rules = nat_forwarding_rules_all[nat_networks.index(net)]
+        for rule in rules:
+            print(rule)
 
-    return nat_networks, nat_rules_all
 
 def mm_option_1():
     list_all_vms()
@@ -271,6 +294,12 @@ def mm_option_6():
         main_menu()
 
 
+def mm_option_7():
+    list_port_fwd()
+    input("\nPress enter to go back to main menu...")
+    main_menu()
+
+
 def main_menu():
     print("\nPick and action:")
     print("1.) List all VMs, their status and IPs")
@@ -298,7 +327,8 @@ def main_menu():
         mm_option_5()
     if option == "6":
         mm_option_6()
-
+    if option == "7":
+        mm_option_7()
 
     if option == "q":
         quit()
