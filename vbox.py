@@ -1,5 +1,7 @@
 import subprocess
 import re
+from pathlib import Path
+
 
 # virtualbox basic commands
 list_vms_cmd = 'vboxmanage list vms --sorted'
@@ -313,6 +315,83 @@ def nat_network_rule_cleanup():
                 output_to_lines(command)
 
 
+def ask_for_ssh_username(vmname):
+    message = 'Enter Username for ' + vmname + ': '
+    username = input(message)
+    return username
+
+
+def ask_for_ssh_key(vmname):
+    message = 'Enter cert for ' + vmname + '(hit enter to skip cert for this host): '
+    cert = input(message)
+    return cert
+
+
+def add_ssh_config_entry(vmname, port, username, cert):
+    global vmgr_config_file
+    vmgr_config_file.write('\nHost ' + vmname + '\n')
+    vmgr_config_file.write('  Hostname 127.0.0.1\n')
+    vmgr_config_file.write('  Port ' + port + '\n')
+    if username == 'ask':
+        username = ask_for_ssh_username(vmname)
+        vmgr_config_file.write('  User ' + username +'\n')
+    else:
+        vmgr_config_file.write('  User ' + username + '\n')
+    if cert != 'no':
+        if cert == 'ask':
+            cert = ask_for_ssh_key(vmname)
+            if cert:
+                vmgr_config_file.write('  IdentityFile ' + cert + '\n')
+        else:
+            vmgr_config_file.write('  IdentityFile ' + cert + '\n')
+
+
+def generate_vmgr_config_file():
+    global vmgr_config_file
+    home = str(Path.home())
+    path = home + '/.ssh/vmgr_config'
+    vmgr_config_file = (open(path, "w"))
+    get_port_fwd_info()
+    same_user = input('Use same username for all hosts?  y/n:  ')
+    if same_user == 'y':
+        username = input('Enter username for all hosts: ')
+    use_cert = input('Use certificates to connect to hosts?  y/n:  ')
+    if use_cert =='y':
+        same_cert = input('Use same certificate for all hosts?  y/n:  ')
+        if same_cert == 'y':
+            cert = input('Enter cert for all hosts: ')
+
+    for net in range(len(nat_networks)):
+        rules = nat_forwarding_rules_all[net]
+        for rule in rules:
+            rule_content = rule.split(':')
+            dest_port = rule_content[-1]
+            rule_name = rule_content[0]
+            in_port = rule_content[3]
+            vmname = rule_name[:-5]
+            if rule_name[-5:] == '_vmgr' and dest_port == '22':
+
+                if same_user == 'n':
+                    username = 'ask'
+
+                if use_cert == 'n':
+                    cert = 'no'
+
+                if use_cert == 'y' and same_cert == 'n':
+                    cert = 'ask'
+
+                add_ssh_config_entry(vmname, in_port, username, cert)
+
+    vmgr_config_file.close()
+
+
+
+
+
+
+
+
+
 def mm_option_1():
     list_all_vms()
     input("\nPress enter to go back to main menu...")
@@ -382,7 +461,7 @@ def mm_option_7():
 def mm_option_8():
     nat_network_rule_cleanup()
     generate_nat_rules()
-
+    generate_vmgr_config_file()
     input("\nPress enter to go back to main menu...")
     main_menu()
 
@@ -397,7 +476,7 @@ def main_menu():
     print("5.) Stop specific VMs - nicely")
     print("6.) Stop specific VMs - hard")
     print("7.) Show port forwarding config")
-    print("8.) Generate / update port forwarding config")
+    print("8.) Generate / update port forwarding ssh vmgr_config file")
     print("9.) Update ssh config file on the server for accessing VMs from outside the NAT network")
     print("10.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network\n")
     print('Press "q" to quit')
