@@ -9,3 +9,176 @@ VBoxManage natnetwork modify --netname natnet1 --port-forward-4 delete ssh
 
 
 rdp 3389
+
+
+
+
+RDP
+screen mode id:i:1
+use multimon:i:0
+desktopwidth:i:1280
+desktopheight:i:720
+session bpp:i:24
+winposstr:s:0,3,0,0,800,600
+compression:i:1
+keyboardhook:i:2
+audiocapturemode:i:0
+videoplaybackmode:i:1
+connection type:i:7
+networkautodetect:i:1
+bandwidthautodetect:i:1
+displayconnectionbar:i:1
+enableworkspacereconnect:i:0
+disable wallpaper:i:0
+allow font smoothing:i:0
+allow desktop composition:i:0
+disable full window drag:i:1
+disable menu anims:i:1
+disable themes:i:0
+disable cursor setting:i:0
+bitmapcachepersistenable:i:1
+full address:s:127.0.0.1:12324
+audiomode:i:0
+redirectprinters:i:1
+redirectcomports:i:0
+redirectsmartcards:i:1
+redirectclipboard:i:1
+redirectposdevices:i:0
+autoreconnection enabled:i:1
+authentication level:i:2
+prompt for credentials:i:0
+negotiate security layer:i:1
+remoteapplicationmode:i:0
+alternate shell:s:
+shell working directory:s:
+gatewayhostname:s:
+gatewayusagemethod:i:4
+gatewaycredentialssource:i:4
+gatewayprofileusagemethod:i:0
+promptcredentialonce:i:0
+gatewaybrokeringtype:i:0
+use redirection server name:i:0
+rdgiskdcproxy:i:0
+kdcproxyname:s:
+username:s:Administrator
+drivestoredirect:s:
+
+
+
+
+
+remmina
+~/.local/share/remmina
+
+
+[remmina]
+relax-order-checks=0
+name=M2play
+resolution_mode=2
+gwtransp=http
+serialdriver=
+password=.
+gateway_domain=
+quality=0
+shareserial=0
+sound=off
+enableproxy=0
+microphone=0
+precommand=
+sharefolder=
+ssh_privatekey=
+cert_ignore=0
+ssh_enabled=0
+domain=
+disable_fastpath=0
+sharesmartcard=0
+disableautoreconnect=0
+ssh_server=
+gateway_server=
+printername=
+ssh_username=
+resolution_width=0
+ssh_charset=
+ssh_auth=0
+ssh_password=
+shareprinter=0
+gateway_username=
+postcommand=
+security=
+server=192.168.1.114
+gateway_password=
+glyph-cache=0
+ssh_loopback=0
+console=0
+parallelname=
+smartcardname=ls
+disableclipboard=0
+resolution_height=0
+execpath=
+parallelpath=
+group=Home Lab
+shareparallel=0
+exec=
+disablepasswordstoring=0
+colordepth=64
+serialname=
+loadbalanceinfo=
+clientname=
+gateway_usage=0
+serialpermissive=0
+protocol=RDP
+username=administrator
+printerdriver=
+serialpath=
+window_height=843
+viewmode=1
+window_maximize=0
+window_width=1432
+scale=2
+
+
+
+
+Mac
+gatewaybrokeringtype:i:0
+use redirection server name:i:0
+disable themes:i:0
+disable cursor setting:i:0
+disable menu anims:i:1
+remoteapplicationcmdline:s:
+redirected video capture encoding quality:i:0
+audiocapturemode:i:0
+prompt for credentials on client:i:0
+remoteapplicationprogram:s:
+gatewayusagemethod:i:2
+screen mode id:i:1
+use multimon:i:0
+authentication level:i:2
+desktopwidth:i:0
+desktopheight:i:0
+redirectclipboard:i:1
+loadbalanceinfo:s:
+enablecredsspsupport:i:1
+promptcredentialonce:i:0
+redirectprinters:i:0
+autoreconnection enabled:i:1
+administrative session:i:0
+redirectsmartcards:i:0
+authoring tool:s:
+alternate shell:s:
+remoteapplicationmode:i:0
+disable full window drag:i:1
+gatewayusername:s:
+shell working directory:s:
+audiomode:i:0
+remoteapplicationappid:s:
+username:s:lab\admin
+allow font smoothing:i:1
+connect to console:i:0
+gatewayhostname:s:
+camerastoredirect:s:
+drivestoredirect:s:*
+session bpp:i:32
+disable wallpaper:i:0
+full address:s:54.158.63.23
+gatewayaccesstoken:s:

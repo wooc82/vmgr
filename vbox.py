@@ -1,6 +1,7 @@
 import subprocess
 import re
 from pathlib import Path
+import os
 
 
 # virtualbox basic commands
@@ -18,6 +19,7 @@ showvminfo_cmd = 'vboxmanage showvminfo '
 grep_NIC_1_cmd = ' |grep "NIC 1"'
 grep_OS_type_cmd = ' |grep "Guest OS"'
 
+
 # variables initialization
 output_lines = []
 vm_list = []
@@ -26,12 +28,6 @@ running_vm_list = []
 nat_forwarding_rules_all = []
 nat_networks = []
 
-
-# class vboxvm:
-#    def __init__(self, name):
-#       self.name = name
-#        self.IP = IP_addr
-#        self.status = onoff
 
 
 # list all running VMs configured in Virtualbox
@@ -279,14 +275,14 @@ def create_nat_rule(vmname):
         else:
             if check_if_windows(vmname):
                 dest_port = '3389'
-                if int(ip_last) < 10:
+                if int(ip_last) < 11:
                     port_nr = int(ip_last) + 400
                     rem_port = str(port_nr) + '89'
                 else:
                     rem_port = ip_last + '89'
             else:
                 dest_port = '22'
-                if int(ip_last) < 10:
+                if int(ip_last) < 11:
                     port_nr = int(ip_last) + 400
                     rem_port = str(port_nr) + '22'
                 else:
@@ -315,7 +311,7 @@ def nat_network_rule_cleanup():
                 output_to_lines(command)
 
 
-def ask_for_ssh_username(vmname):
+def ask_for_username(vmname):
     message = 'Enter Username for ' + vmname + ': '
     username = input(message)
     return username
@@ -333,8 +329,8 @@ def add_ssh_config_entry(vmname, port, username, cert):
     vmgr_config_file.write('  Hostname 127.0.0.1\n')
     vmgr_config_file.write('  Port ' + port + '\n')
     if username == 'ask':
-        username = ask_for_ssh_username(vmname)
-        vmgr_config_file.write('  User ' + username +'\n')
+        username = ask_for_username(vmname)
+        vmgr_config_file.write('  User ' + username + '\n')
     else:
         vmgr_config_file.write('  User ' + username + '\n')
     if cert != 'no':
@@ -356,7 +352,7 @@ def generate_vmgr_config_file():
     if same_user == 'y':
         username = input('Enter username for all hosts: ')
     use_cert = input('Use certificates to connect to hosts?  y/n:  ')
-    if use_cert =='y':
+    if use_cert == 'y':
         same_cert = input('Use same certificate for all hosts?  y/n:  ')
         if same_cert == 'y':
             cert = input('Enter cert for all hosts: ')
@@ -385,9 +381,266 @@ def generate_vmgr_config_file():
     vmgr_config_file.close()
 
 
+def generate_vmgr_rdp_files():
+    get_port_fwd_info()
+    home = str(Path.home())
+    paths = ['/.local/share/remmina/', '/.ssh/RDP_Mac/', '/.ssh/RDP_Win/']
+    for folder in paths:
+        path = home + folder
+        if not os.path.exists(path):
+            os.makedirs(path)
+        else:
+            file_cleanup(path)
+
+    ip = str(input('\nEnter hypervisor IP: '))
+    same_user = input('Use same username for all hosts?  y/n:  ')
+    if same_user == 'y':
+        username = input('Enter username for all hosts: ')
+
+    for net in range(len(nat_networks)):
+        rules = nat_forwarding_rules_all[net]
+        for rule in rules:
+            rule_content = rule.split(':')
+            dest_port = rule_content[-1]
+            rule_name = rule_content[0]
+            port = rule_content[3]
+            vmname = rule_name[:-5]
+            if rule_name[-5:] == '_vmgr' and dest_port == '3389':
+                if same_user == 'n':
+                    username = ask_for_username(vmname)
+
+                generate_remmina_rdp_file(vmname, ip, port, username)
+                generate_mac_rdp_file(vmname, ip, port, username)
+                generate_win_rdp_file(vmname, ip, port, username)
 
 
 
+def file_cleanup(path):
+    list_of_files = os.listdir(path)
+    for file in list_of_files:
+        if file.__contains__("_vmgr"):
+            file_to_remove = path + file
+            os.remove(file_to_remove)
+
+
+def generate_remmina_rdp_file(vmname, ip, port, username):
+    home = str(Path.home())
+    path = home + '/.local/share/remmina/'
+
+    file = path + vmname + '_vmgr.remmina'
+    remmina_rdp_config_file = open(file, "w")
+
+    remmina_rdp_config_file.write("[remmina]\n")
+    remmina_rdp_config_file.write("relax-order-checks=0\n")
+
+    remmina_rdp_config_file.write("name=" + vmname + "_vmgr\n")
+
+    remmina_rdp_config_file.write("resolution_mode=2\n")
+    remmina_rdp_config_file.write("gwtransp=http\n")
+    remmina_rdp_config_file.write("serialdriver=\n")
+    remmina_rdp_config_file.write("password=.\n")
+    remmina_rdp_config_file.write("gateway_domain=\n")
+    remmina_rdp_config_file.write("quality=0\n")
+    remmina_rdp_config_file.write("shareserial=0\n")
+    remmina_rdp_config_file.write("sound=on\n")
+    remmina_rdp_config_file.write("enableproxy=0\n")
+    remmina_rdp_config_file.write("microphone=0\n")
+    remmina_rdp_config_file.write("precommand=\n")
+    remmina_rdp_config_file.write("sharefolder=\n")
+    remmina_rdp_config_file.write("ssh_privatekey=\n")
+    remmina_rdp_config_file.write("cert_ignore=0\n")
+    remmina_rdp_config_file.write("ssh_enabled=0\n")
+    remmina_rdp_config_file.write("domain=\n")
+    remmina_rdp_config_file.write("disable_fastpath=0\n")
+    remmina_rdp_config_file.write("sharesmartcard=0\n")
+    remmina_rdp_config_file.write("disableautoreconnect=0\n")
+    remmina_rdp_config_file.write("ssh_server=\n")
+    remmina_rdp_config_file.write("gateway_server=\n")
+    remmina_rdp_config_file.write("printername=\n")
+    remmina_rdp_config_file.write("ssh_username=\n")
+    remmina_rdp_config_file.write("resolution_width=0\n")
+    remmina_rdp_config_file.write("ssh_charset=\n")
+    remmina_rdp_config_file.write("ssh_auth=0\n")
+    remmina_rdp_config_file.write("ssh_password=\n")
+    remmina_rdp_config_file.write("shareprinter=0\n")
+    remmina_rdp_config_file.write("gateway_username=\n")
+    remmina_rdp_config_file.write("postcommand=\n")
+    remmina_rdp_config_file.write("security=\n")
+
+    remmina_rdp_config_file.write("server=" + ip + ":" + port + "\n")
+
+    remmina_rdp_config_file.write("gateway_password=\n")
+    remmina_rdp_config_file.write("glyph-cache=0\n")
+    remmina_rdp_config_file.write("ssh_loopback=0\n")
+    remmina_rdp_config_file.write("console=0\n")
+    remmina_rdp_config_file.write("parallelname=\n")
+    remmina_rdp_config_file.write("smartcardname=ls\n")
+    remmina_rdp_config_file.write("disableclipboard=0\n")
+    remmina_rdp_config_file.write("resolution_height=0\n")
+    remmina_rdp_config_file.write("execpath=\n")
+    remmina_rdp_config_file.write("parallelpath=\n")
+    remmina_rdp_config_file.write("group=vmgr\n")
+    remmina_rdp_config_file.write("shareparallel=0\n")
+    remmina_rdp_config_file.write("exec=\n")
+    remmina_rdp_config_file.write("disablepasswordstoring=0\n")
+    remmina_rdp_config_file.write("colordepth=64\n")
+    remmina_rdp_config_file.write("serialname=\n")
+    remmina_rdp_config_file.write("loadbalanceinfo=\n")
+    remmina_rdp_config_file.write("clientname=\n")
+    remmina_rdp_config_file.write("gateway_usage=0\n")
+    remmina_rdp_config_file.write("serialpermissive=0\n")
+    remmina_rdp_config_file.write("protocol=RDP\n")
+
+    remmina_rdp_config_file.write("username=" + username + "\n")
+
+    remmina_rdp_config_file.write("printerdriver=\n")
+    remmina_rdp_config_file.write("serialpath=\n")
+    remmina_rdp_config_file.write("window_height=843\n")
+    remmina_rdp_config_file.write("viewmode=1\n")
+    remmina_rdp_config_file.write("window_maximize=0\n")
+    remmina_rdp_config_file.write("window_width=1432\n")
+    remmina_rdp_config_file.write("scale=2\n")
+
+    remmina_rdp_config_file.close()
+
+
+def generate_mac_rdp_file(vmname, ip, port, username):
+    home = str(Path.home())
+    path = home + '/.ssh/RDP_Mac/'
+
+    file = path + vmname + '_vmgr.rdp'
+    mac_rdp_config_file = open(file, "w")
+
+    mac_rdp_config_file.write("gatewaybrokeringtype:i:0\n")
+    mac_rdp_config_file.write("use redirection server name:i:0\n")
+    mac_rdp_config_file.write("disable themes:i:0\n")
+    mac_rdp_config_file.write("disable cursor setting:i:0\n")
+    mac_rdp_config_file.write("disable menu anims:i:1\n")
+    mac_rdp_config_file.write("remoteapplicationcmdline:s:\n")
+    mac_rdp_config_file.write("redirected video capture encoding quality:i:0\n")
+    mac_rdp_config_file.write("audiocapturemode:i:0\n")
+    mac_rdp_config_file.write("prompt for credentials on client:i:0\n")
+    mac_rdp_config_file.write("remoteapplicationprogram:s:\n")
+    mac_rdp_config_file.write("gatewayusagemethod:i:2\n")
+    mac_rdp_config_file.write("screen mode id:i:1\n")
+    mac_rdp_config_file.write("use multimon:i:0\n")
+    mac_rdp_config_file.write("authentication level:i:2\n")
+    mac_rdp_config_file.write("desktopwidth:i:0\n")
+    mac_rdp_config_file.write("desktopheight:i:0\n")
+    mac_rdp_config_file.write("redirectclipboard:i:1\n")
+    mac_rdp_config_file.write("loadbalanceinfo:s:\n")
+    mac_rdp_config_file.write("enablecredsspsupport:i:1\n")
+    mac_rdp_config_file.write("promptcredentialonce:i:0\n")
+    mac_rdp_config_file.write("redirectprinters:i:0\n")
+    mac_rdp_config_file.write("autoreconnection enabled:i:1\n")
+    mac_rdp_config_file.write("administrative session:i:0\n")
+    mac_rdp_config_file.write("redirectsmartcards:i:0\n")
+    mac_rdp_config_file.write("authoring tool:s:\n")
+    mac_rdp_config_file.write("alternate shell:s:\n")
+    mac_rdp_config_file.write("remoteapplicationmode:i:0\n")
+    mac_rdp_config_file.write("disable full window drag:i:1\n")
+    mac_rdp_config_file.write("gatewayusername:s:\n")
+    mac_rdp_config_file.write("shell working directory:s:\n")
+    mac_rdp_config_file.write("audiomode:i:0\n")
+    mac_rdp_config_file.write("remoteapplicationappid:s:\n")
+
+    mac_rdp_config_file.write("username:s:" + username + "\n")
+
+    mac_rdp_config_file.write("allow font smoothing:i:1\n")
+    mac_rdp_config_file.write("connect to console:i:0\n")
+    mac_rdp_config_file.write("gatewayhostname:s:\n")
+    mac_rdp_config_file.write("camerastoredirect:s:\n")
+    mac_rdp_config_file.write("drivestoredirect:s:*\n")
+    mac_rdp_config_file.write("session bpp:i:32\n")
+    mac_rdp_config_file.write("disable wallpaper:i:0\n")
+
+    mac_rdp_config_file.write("full address:s:" + ip + ":" + port + "\n")
+
+    mac_rdp_config_file.write("gatewayaccesstoken:s:\n")
+
+    mac_rdp_config_file.close()
+
+
+def generate_win_rdp_file(vmname, ip, port, username):
+    home = str(Path.home())
+    path = home + '/.ssh/RDP_Win/'
+
+    file = path + vmname + '_vmgr.rdp'
+    win_rdp_config_file = open(file,"w")
+
+    win_rdp_config_file.write("screen mode id:i:1\n")
+    win_rdp_config_file.write("use multimon:i:0\n")
+    win_rdp_config_file.write("desktopwidth:i:1280\n")
+    win_rdp_config_file.write("desktopheight:i:720\n")
+    win_rdp_config_file.write("session bpp:i:24\n")
+    win_rdp_config_file.write("winposstr:s:0,3,0,0,800,600\n")
+    win_rdp_config_file.write("compression:i:1\n")
+    win_rdp_config_file.write("keyboardhook:i:2\n")
+    win_rdp_config_file.write("audiocapturemode:i:0\n")
+    win_rdp_config_file.write("videoplaybackmode:i:1\n")
+    win_rdp_config_file.write("connection type:i:7\n")
+    win_rdp_config_file.write("networkautodetect:i:1\n")
+    win_rdp_config_file.write("bandwidthautodetect:i:1\n")
+    win_rdp_config_file.write("displayconnectionbar:i:1\n")
+    win_rdp_config_file.write("enableworkspacereconnect:i:0\n")
+    win_rdp_config_file.write("disable wallpaper:i:0\n")
+    win_rdp_config_file.write("allow font smoothing:i:0\n")
+    win_rdp_config_file.write("allow desktop composition:i:0\n")
+    win_rdp_config_file.write("disable full window drag:i:1\n")
+    win_rdp_config_file.write("disable menu anims:i:1\n")
+    win_rdp_config_file.write("disable themes:i:0\n")
+    win_rdp_config_file.write("disable cursor setting:i:0\n")
+    win_rdp_config_file.write("bitmapcachepersistenable:i:1\n")
+
+    win_rdp_config_file.write("full address:s:" + ip + ":" + port + "\n")
+
+    win_rdp_config_file.write("audiomode:i:0\n")
+    win_rdp_config_file.write("redirectprinters:i:1\n")
+    win_rdp_config_file.write("redirectcomports:i:0\n")
+    win_rdp_config_file.write("redirectsmartcards:i:1\n")
+    win_rdp_config_file.write("redirectclipboard:i:1\n")
+    win_rdp_config_file.write("redirectposdevices:i:0\n")
+    win_rdp_config_file.write("autoreconnection enabled:i:1\n")
+    win_rdp_config_file.write("authentication level:i:2\n")
+    win_rdp_config_file.write("prompt for credentials:i:0\n")
+    win_rdp_config_file.write("negotiate security layer:i:1\n")
+    win_rdp_config_file.write("remoteapplicationmode:i:0\n")
+    win_rdp_config_file.write("alternate shell:s:\n")
+    win_rdp_config_file.write("shell working directory:s:\n")
+    win_rdp_config_file.write("gatewayhostname:s:\n")
+    win_rdp_config_file.write("gatewayusagemethod:i:4\n")
+    win_rdp_config_file.write("gatewaycredentialssource:i:4\n")
+    win_rdp_config_file.write("gatewayprofileusagemethod:i:0\n")
+    win_rdp_config_file.write("promptcredentialonce:i:0\n")
+    win_rdp_config_file.write("gatewaybrokeringtype:i:0\n")
+    win_rdp_config_file.write("use redirection server name:i:0\n")
+    win_rdp_config_file.write("rdgiskdcproxy:i:0\n")
+    win_rdp_config_file.write("kdcproxyname:s:\n")
+
+    win_rdp_config_file.write("username:s:" + username + "\n")
+
+    win_rdp_config_file.write("drivestoredirect:s:\n")
+
+    win_rdp_config_file.close()
+
+
+def generate_vmgr_config_IP_file():
+    ip = str(input('Enter hypervisor IP that can be used by other hosts on your network to connect to VMs: '))
+    global vmgr_config_file
+    home = str(Path.home())
+    source = home + '/.ssh/vmgr_config'
+    dest = home + '/.ssh/vmgr_config_IP'
+    vmgr_config_IP_file = open(dest,'w')
+    with open(source) as f:
+        lines = f.readlines()
+    for line in lines:
+        if line.__contains__("127.0.0.1"):
+            new_line = line.replace('127.0.0.1', ip)
+            vmgr_config_IP_file.write(new_line)
+        else:
+            vmgr_config_IP_file.write(line)
+
+    vmgr_config_IP_file.close()
 
 
 
@@ -466,6 +719,18 @@ def mm_option_8():
     main_menu()
 
 
+def mm_option_9():
+    generate_vmgr_config_IP_file()
+    input("\nPress enter to go back to main menu...")
+    main_menu()
+
+
+def mm_option_10():
+    generate_nat_rules()
+    generate_vmgr_rdp_files()
+    input("\nPress enter to go back to main menu...")
+    main_menu()
+
 
 def main_menu():
     print("\nPick and action:")
@@ -477,32 +742,37 @@ def main_menu():
     print("6.) Stop specific VMs - hard")
     print("7.) Show port forwarding config")
     print("8.) Generate / update port forwarding ssh vmgr_config file")
-    print("9.) Update ssh config file on the server for accessing VMs from outside the NAT network")
-    print("10.) Generate / update configs for RDP sessions to access Windows servers from outside NAT network\n")
+    print("9.) Copy existing vmgr_config and replace localhost with hypervisor IP - use on other hosts on the network")
+    print("10.) Generate / update configs for RDP sessions to access Windows servers\n")
     print('Press "q" to quit')
 
     option = input("Pick and option: ")
     if option == "1":
         mm_option_1()
-    if option == "2":
+    elif option == "2":
         mm_option_2()
-    if option == "3":
+    elif option == "3":
         mm_option_3()
-    if option == "4":
+    elif option == "4":
         mm_option_4()
-    if option == "5":
+    elif option == "5":
         mm_option_5()
-    if option == "6":
+    elif option == "6":
         mm_option_6()
-    if option == "7":
+    elif option == "7":
         mm_option_7()
-    if option == "8":
+    elif option == "8":
         mm_option_8()
+    elif option == "9":
+        mm_option_9()
+    elif option == "10":
+        mm_option_10()
 
-    if option == "q":
+    elif option == "q":
         quit()
     else:
-        quit()
+        print("Invalid option selected - try again")
+        main_menu()
 
 
 main_menu()
