@@ -28,6 +28,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../playground" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -212,10 +213,10 @@
       <screen x="70" y="27" width="1850" height="1053" />
     </state>
     <state x="784" y="269" width="624" height="551" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/70.27.1850.1053@70.27.1850.1053" timestamp="1579053002785" />
-    <state x="1095" y="290" width="1219" height="949" key="CommitChangelistDialog2" timestamp="1579130999141">
+    <state x="1095" y="290" width="1219" height="949" key="CommitChangelistDialog2" timestamp="1579199861314">
       <screen x="70" y="27" width="2490" height="1413" />
     </state>
-    <state x="1095" y="290" width="1219" height="949" key="CommitChangelistDialog2/70.27.2490.1413@70.27.2490.1413" timestamp="1579130999141" />
+    <state x="1095" y="290" width="1219" height="949" key="CommitChangelistDialog2/70.27.2490.1413@70.27.2490.1413" timestamp="1579199861314" />
     <state x="70" y="742" width="447" height="520" key="FileChooserDialogImpl" timestamp="1579036981227">
       <screen x="70" y="27" width="2490" height="1413" />
     </state>
