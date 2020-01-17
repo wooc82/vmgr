@@ -67,6 +67,7 @@ def offvmlist():
     power_off_list = []
     vmlist()
     runningvmlist()
+    # checking if vm is on the list of running vms, if not adding to the list
     for vm in vm_list:
         if vm not in running_vm_list:
             power_off_list.append(vm)
@@ -75,6 +76,7 @@ def offvmlist():
 
 
 def get_ip(vm_name):
+    # checking vmdetails for each running vm and listing IP if available. Requires guest additions.
     command = list_vmdetails_cmd + vm_name
     details_list = output_to_lines(command)
     for lnnr in range(len(details_list)):
@@ -87,8 +89,7 @@ def get_ip(vm_name):
     return ip_addr
 
 
-# function that can run any command and put output in to list one line per list item
-
+# function that can run any command and puts output in to list one line per list item
 def output_to_lines(command):
     global output_lines
     output_lines = []
@@ -113,6 +114,7 @@ def output_to_lines(command):
 
 def list_all_vms():
     vmlist()
+    # lists all vms, checks if on, adds IP if available, adjusts tabs for proper text spacing
     for vmnumber in range(len(vm_list)):
         name = vm_list[vmnumber]
         runningvmlist()
@@ -131,6 +133,7 @@ def list_all_vms():
 
 def list_running_vms():
     runningvmlist()
+    # lists running vms, adds IP if available, adjusts tabs for proper text spacing
     for vmnumber in range(len(running_vm_list)):
         name = running_vm_list[vmnumber]
         ip_addr = get_ip(name)
@@ -144,12 +147,14 @@ def list_running_vms():
 
 
 def list_offline_vms():
+    # lists offline vms
     offvmlist()
     for vmnumber in range(len(power_off_list)):
         print(vmnumber, "\t", power_off_list[vmnumber])
 
 
 def start_vm():
+    # starts vm the normal way
     list_offline_vms()
     vmnumber = input("\nPick VM to Start(q to cancel and go to Main Menu): ")
     if vmnumber == 'q':
@@ -164,6 +169,7 @@ def start_vm():
 
 
 def start_vm_headless():
+    # starts vm headless
     list_offline_vms()
     vmnumber = input("\nPick VM to Start(q to cancel and go to Main Menu): ")
     if vmnumber == 'q':
@@ -178,6 +184,7 @@ def start_vm_headless():
 
 
 def stop_vm_nicely():
+    # sends shutdown (powerbutton) signal to the vm
     list_running_vms()
     vmnumber = input("\nPick VM to Stop(q to cancel and go to Main Menu): ")
     if vmnumber == 'q':
@@ -192,6 +199,7 @@ def stop_vm_nicely():
 
 
 def stop_vm_hard():
+    # kills the VM hard
     list_running_vms()
     vmnumber = input("\nPick VM to Stop(q to cancel and go to Main Menu): ")
     if vmnumber == 'q':
@@ -206,6 +214,7 @@ def stop_vm_hard():
 
 
 def get_port_fwd_info():
+    # lists all currently programmed port forwarding rules for all NAT Networks
     lines = output_to_lines(list_natnets_cmd)
     global nat_networks
     global nat_forwarding_rules_all
@@ -230,6 +239,7 @@ def get_port_fwd_info():
 
 
 def list_port_fwd():
+    # lists NAT Networks and the forwarding rules in each network
     get_port_fwd_info()
     for net in range(len(nat_networks)):
         net_name = nat_networks[net]
@@ -241,6 +251,7 @@ def list_port_fwd():
 
 
 def get_vm_nat_network(vmname):
+    # check if the hosts is configured to use NAT Network and lists it if yes
     command = showvminfo_cmd + vmname + grep_NIC_1_cmd
     line = output_to_lines(command)
     content = line[0]
@@ -254,6 +265,7 @@ def get_vm_nat_network(vmname):
 
 
 def check_if_windows(vmname):
+    # checks if guest is Windows xxx
     command = showvminfo_cmd + vmname + grep_OS_type_cmd
     line = output_to_lines(command)
     content = line[0]
@@ -264,17 +276,22 @@ def check_if_windows(vmname):
 
 
 def create_nat_rule(vmname):
+    # creates a NAT rule for a guest
+    # check guest IP and continues if available
     ip = get_ip(vmname)
     if ip == "Check g additions":
         print("Skipping ", vmname, " - Don't see IP - check guest additions")
     else:
         ip_last = ip.split(".")[3]
+        # checks which NAT Network guest is in
         nat_name = get_vm_nat_network(vmname)
         if nat_name == "Check guest network settings":
             print("Skipping ", vmname, nat_name)
         else:
+            # checks guest OS, if windows sets port to RDP if not sets port to ssh
             if check_if_windows(vmname):
                 dest_port = '3389'
+                # adds extra count to port number to avoid duplicates and <1000 range,comes up with unique port
                 if int(ip_last) < 11:
                     port_nr = int(ip_last) + 400
                     rem_port = str(port_nr) + '89'
@@ -294,12 +311,14 @@ def create_nat_rule(vmname):
 
 
 def generate_nat_rules():
+    # generates NAT rules for running vms
     runningvmlist()
     for vmname in runningvmlist():
         create_nat_rule(vmname)
 
 
 def nat_network_rule_cleanup():
+    # removes all previous rules created by the app
     get_port_fwd_info()
     for net in nat_networks:
         rules = nat_forwarding_rules_all[nat_networks.index(net)]
@@ -324,6 +343,7 @@ def ask_for_ssh_key(vmname):
 
 
 def add_ssh_config_entry(vmname, port, username, cert):
+    # appends ssh config file with entry for single guest. Using loopback for no network situations
     global vmgr_config_file
     vmgr_config_file.write('\nHost ' + vmname + '\n')
     vmgr_config_file.write('  Hostname 127.0.0.1\n')
@@ -343,6 +363,7 @@ def add_ssh_config_entry(vmname, port, username, cert):
 
 
 def generate_vmgr_config_file():
+    # checks if you want to use certs, same username and calls config creation
     global vmgr_config_file
     home = str(Path.home())
     path = home + '/.ssh/vmgr_config'
@@ -382,6 +403,7 @@ def generate_vmgr_config_file():
 
 
 def generate_vmgr_rdp_files():
+    # asks for hypervisor IP and usernames, calls creation of 3 different  RDP files
     get_port_fwd_info()
     home = str(Path.home())
     paths = ['/.local/share/remmina/', '/.ssh/RDP_Mac/', '/.ssh/RDP_Win/']
@@ -416,6 +438,7 @@ def generate_vmgr_rdp_files():
 
 
 def file_cleanup(path):
+    # removes all files created by the app in specific location
     list_of_files = os.listdir(path)
     for file in list_of_files:
         if file.__contains__("_vmgr"):
@@ -424,9 +447,9 @@ def file_cleanup(path):
 
 
 def generate_remmina_rdp_file(vmname, ip, port, username):
+    # generates a remmina config file
     home = str(Path.home())
     path = home + '/.local/share/remmina/'
-
     file = path + vmname + '_vmgr.remmina'
     remmina_rdp_config_file = open(file, "w")
 
@@ -505,9 +528,9 @@ def generate_remmina_rdp_file(vmname, ip, port, username):
 
 
 def generate_mac_rdp_file(vmname, ip, port, username):
+    # generates mac remote desktop app config file
     home = str(Path.home())
     path = home + '/.ssh/RDP_Mac/'
-
     file = path + vmname + '_vmgr.rdp'
     mac_rdp_config_file = open(file, "w")
 
@@ -562,11 +585,12 @@ def generate_mac_rdp_file(vmname, ip, port, username):
 
 
 def generate_win_rdp_file(vmname, ip, port, username):
+    # generates Windows RDP config file
     home = str(Path.home())
     path = home + '/.ssh/RDP_Win/'
 
     file = path + vmname + '_vmgr.rdp'
-    win_rdp_config_file = open(file,"w")
+    win_rdp_config_file = open(file, "w")
 
     win_rdp_config_file.write("screen mode id:i:1\n")
     win_rdp_config_file.write("use multimon:i:0\n")
@@ -624,13 +648,14 @@ def generate_win_rdp_file(vmname, ip, port, username):
     win_rdp_config_file.close()
 
 
-def generate_vmgr_config_IP_file():
+def generate_vmgr_config_ip_file():
+    # copy of the ssh config with loopback, but with hypervisor IP - use on other hosts on the network
     ip = str(input('Enter hypervisor IP that can be used by other hosts on your network to connect to VMs: '))
     global vmgr_config_file
     home = str(Path.home())
     source = home + '/.ssh/vmgr_config'
     dest = home + '/.ssh/vmgr_config_IP'
-    vmgr_config_IP_file = open(dest,'w')
+    vmgr_config_IP_file = open(dest, 'w')
     with open(source) as f:
         lines = f.readlines()
     for line in lines:
@@ -641,8 +666,6 @@ def generate_vmgr_config_IP_file():
             vmgr_config_IP_file.write(line)
 
     vmgr_config_IP_file.close()
-
-
 
 
 def mm_option_1():
@@ -720,7 +743,7 @@ def mm_option_8():
 
 
 def mm_option_9():
-    generate_vmgr_config_IP_file()
+    generate_vmgr_config_ip_file()
     input("\nPress enter to go back to main menu...")
     main_menu()
 

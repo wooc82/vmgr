@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="10b695f6-cb82-4c9f-aeaf-582aed767ea4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Readme.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Readme.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Scratchpad" beforeDir="false" afterPath="$PROJECT_DIR$/Scratchpad" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vbox.py" beforeDir="false" afterPath="$PROJECT_DIR$/vbox.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
